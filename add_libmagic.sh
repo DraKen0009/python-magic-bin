@@ -34,22 +34,8 @@ install_precompiled() {
         apt-get install -y libmagic1
     elif [ -n "$(which apk)" ]; then
         apk add --update libmagic
-    elif [ -n "$(which dnf)" ]; then
+    else [ -n "$(which dnf)" ]; then
         dnf --setopt install_weak_deps=false -y install file-libs
-    else
-        # windows (no install, just download into current working directory)
-        # could also consider install using `pacman`: https://packages.msys2.org/base/mingw-w64-file
-        # which would require an update of copy_libmagic below to account for new magic.mgc paths
-        python <<EOF
-import platform, sysconfig, io, zipfile, urllib.request
-assert platform.system() == "Windows"
-machine = "x86" if sysconfig.get_platform() == "win32" else "x64"
-url = f"https://github.com/julian-r/file-windows/releases/download/v5.44/file_5.44-build104-vs2022-{machine}.zip"
-print("Downloading", url)
-zipfile.ZipFile(io.BytesIO(urllib.request.urlopen(url).read())).extractall(".")
-EOF
-        # check what was copied
-        ls -ltra
     fi
 }
 
